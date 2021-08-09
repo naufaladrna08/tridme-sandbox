@@ -4,6 +4,7 @@
 
 Camera* camera;
 Renderer* render;
+Renderer* light;
 
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
@@ -41,13 +42,36 @@ int main(int argc, char* argv[]) {
 
 		glEnable(GL_DEPTH_TEST);
 
-		Shader* shader = new Shader("Basic.shader");
+		
+		Shader* shader 			= new Shader("Color.shader");
+		Shader* lightShader = new Shader("Light.shader");
 		camera = new Camera((float) 800, (float) 600, 0.1f, 1000.0f, 
                     	  glm::vec3(0.0f, 0.0f, 6.0f));
-		render = new Renderer(MESH_TYPE::MESH_SPHERE, camera); 
+		
+		/* Object */
+		render = new Renderer(MESH_TYPE::MESH_CUBE, camera); 
 
 		render->SetShader(shader);
 		render->SetPosition(glm::vec3(0.0f));
+		render->SetColor(glm::vec3(1.0f, 1.0f, 0.0f));
+		render->SetScale(glm::vec3(3.0f));
+
+		shader->Bind();
+		shader->SetUniform3f("objectColor", render->GetColor().x, render->GetColor().y, render->GetColor().z);
+		shader->SetUniform3f("lightColor", 1.0f, 1.0f, 1.0f);
+		shader->SetUniform3f("lightPosition", 8.0f, 8.0f, 8.0f);
+		shader->SetUniform3f("viewPosition", camera->getCameraPosition().x, camera->getCameraPosition().y, camera->getCameraPosition().z);
+
+		shader->SetUniform3f("material.ambient", 1.0f, 0.5f, 0.31f);
+		shader->SetUniform3f("material.diffuse", 1.0f, 0.5f, 0.31f);
+		shader->SetUniform3f("material.specular", 0.5f, 0.5f, 0.5f);
+		shader->SetUniform1f("material.shininess", 32.0f);
+
+
+		/* End of object */
+		light = new Renderer(MESH_TYPE::MESH_CUBE, camera);
+		light->SetShader(lightShader);
+		light->SetPosition(glm::vec3(3.0f, 3.0f, 10.0f));
 
 		while (!glfwWindowShouldClose(window)) {
 			/* Each frame */
@@ -56,10 +80,11 @@ int main(int argc, char* argv[]) {
 			lastFrame = currentFrame;
 
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+			glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 			camera->Move(window, deltaTime)	;
 			render->DrawMesh();
+			light->DrawMesh();
 
 			glfwPollEvents();
 			glfwSwapBuffers(window);
