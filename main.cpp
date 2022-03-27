@@ -1,6 +1,6 @@
 #include <engine.h>
 #include <logging.h>
-#include <extern/GLFW/glfw3.h>
+#include <GLFW/glfw3.h>
 
 Camera* camera;
 Renderer* render;
