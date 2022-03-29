@@ -37,6 +37,11 @@ int main(int argc, char* argv[]) {
 	}
 
 	{
+		/* Setup ImGUI context */
+		// IMGUI_CHECKVERSION();
+
+
+
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);  
 		glfwSetCursorPosCallback(window, mouse_callback);
 
